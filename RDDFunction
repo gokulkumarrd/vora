@@ -1,22 +1,22 @@
 RDD Functions
+----------------------------------------------------------------------------
+**Splitting rows of info**
 
-# Splitting rows of info
-
-import org.apache.spark._ 
+import org.apache.spark._
 
 val data = sc.parallelize(Array("IN01 2016 01 00100000001 20160115",
                                 "AU01 2016 01 00100000001 20170115"))
 val pattern = """(\S+) (\S+) (\S+) (\S+) (\S+)""".r
 
-//Case class for the document header 
+//Case class for the document header
 
 case class financialDocumentHeader(companyCode: String,
                                    year: String,
                                    month: String,
                                    documentNumber: String,
-                                   postingDate: String 
+                                   postingDate: String
                                    )
-                                   
+
 def parseFinancialHeaderDocumentLine(line:  String): financialDocumentHeader = {
     val patternMatch = pattern.findFirstMatchIn(line)
     if(patternMatch.isEmpty){
@@ -30,7 +30,7 @@ val dataHeaderDocs = data.map(parseFinancialHeaderDocumentLine)
 println("Results \n -------")
 println(dataHeaderDocs.collect().mkString("\n"))
 
-
+-----------------------------------------------------------------------------------------------------------------------------------
 //map
 import org.apache.spark._
 val companyCodeRDDx = sc.parallelize(Array("GB01","US01","US01","UK01"))
@@ -39,6 +39,8 @@ val companyCodeRDDy = companyCodeRDDx.map(obj => (obj,1))
 println("\n Results \n -----------")
 println("CompanyCodeRDDx : " + companyCodeRDDx.toDF.show())
 println("CompanyCodeRDDy : " + companyCodeRDDy.toDF.show())
+
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //filter
 import org.apache.spark._
@@ -49,11 +51,15 @@ println("\n Results \n -----------")
 println("CompanyCodeRDDx : " + companyCodeRDDx.toDF.show())
 println("CompanyCodeRDDy : " + companyCodeRDDy.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
+
 //keyBy
 import org.apache.spark._
 val companyCodeRDDx = sc.parallelize(Array("GB01","US01","US01","UK01"))
 val companyCodeRDDy = companyCodeRDDx.keyBy(obj => obj.substring(0,2))
 println(companyCodeRDDy.toDF.show())
+
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //CountByKey Sample
 import org.apache.spark._
@@ -61,13 +67,14 @@ import scala.collection._
 
 val sqlContext= new org.apache.spark.sql.SQLContext(sc)
 import sqlContext.implicits._
-      
+
 val companyCodeRDDx = sc.parallelize(Array(("GB01",100),("US01",50),("US01",75),("UK01",100)))
 val companyCodeRDDy = companyCodeRDDx.sample(false,0.5)
 println("\n Results \n -----------")
 println("CompanyCodeRDDx : " + companyCodeRDDx.toDF.show())
 println("CompanyCodeRDDy : " + companyCodeRDDy.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //Distinct
 import org.apache.spark._
@@ -79,6 +86,7 @@ println("\n Results \n -----------")
 println("CompanyCodeRDDx : " + companyCodeRDDx.toDF.show())
 println("CompanyCodeRDDy : " + companyCodeRDDy.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //ReduceByKey
 import org.apache.spark._
@@ -90,6 +98,7 @@ println("\n Results \n -----------")
 println("CompanyCodeRDDx : " + companyCodeRDDx.toDF.show())
 println("CompanyCodeRDDy : " + companyCodeRDDy.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //Union
 import org.apache.spark._
@@ -102,9 +111,9 @@ val companyCodeRDDz = companyCodeRDDx.union(companyCodeRDDy)
 println("\n Results \n ------------")
 println("companyCodeRDDz : " + companyCodeRDDz.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
-
-//Join 
+//Join
 import org.apache.spark._
 
 val companyCodeRDD = sc.parallelize(Array(("GB01",100),("US01",50),("US01",75),("UK01",100)))
@@ -119,7 +128,7 @@ println("companyCodeAttrRDD : " + companyCodeAttrRDD.toDF.show())
 println("companyCodeJoinRDD : " + companyCodeJoinRDD.toDF.show())
 println("companyCodeLeftJoinRDD : " + companyCodeLeftJoinRDD.toDF.show())
 
-
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //FlatMap
 import org.apache.spark._
@@ -130,8 +139,9 @@ val companyCodeRDDFlat = companyCodeRDD.flatMap(a => a.split(","))
 println("\n Results \n ------------")
 println("companyCodeRDDFlat : " + companyCodeRDDFlat.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
-//Map and Split 
+//Map and Split
 import org.apache.spark._
 
 val companyCodeRDD =  sc.parallelize(Array(("GB01,100"),("US01,50"),("US01,75"),("UK01,100")))
@@ -143,8 +153,9 @@ companyCodeRDD.map(x => {
 println("\n Results \n ------------")
 println("companyCodeRDD : " + companyCodeRDD.toDF.show())
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
-//save a RDD to HDFS as a Textfile 
+//save a RDD to HDFS as a Textfile
 
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs.Path
@@ -154,6 +165,7 @@ fs.delete(new Path("/user/vora/sapData"), true)
 val sapDataRDD = sc.parallelize(Array("GB01,100","IN01,200","UK01 90"))
 sapDataRDD.repartition(1).saveAsTextFile("sapData")
 
+-----------------------------------------------------------------------------------------------------------------------------------
 
 //import files to RDD from HDFS
 
@@ -163,4 +175,4 @@ val hdfsFileRDD = sc.textFile("hdfs://vorahost.dummy.nodomain:8020/user/vora/sap
 println("Result \n ------")
 println(hdfsFileRDD.collect().mkString("\n"))
 
-
+-----------------------------------------------------------------------------------------------------------------------------------
