@@ -1,8 +1,14 @@
 RDD Functions
+<<<<<<< HEAD
 ----------------------------------------------------------------------------
 **Splitting rows of info**
 
 import org.apache.spark._
+=======
+__Splitting rows of info__
+
+import org.apache.spark._ 
+>>>>>>> ce087902231c0292c350349366eeac558f2c5a8b
 
 val data = sc.parallelize(Array("IN01 2016 01 00100000001 20160115",
                                 "AU01 2016 01 00100000001 20170115"))
