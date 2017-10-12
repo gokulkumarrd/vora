@@ -1,6 +1,5 @@
 RDD Functions
-
-# Splitting rows of info
+*Splitting rows of info*
 
 import org.apache.spark._ 
 
