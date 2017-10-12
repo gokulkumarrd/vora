@@ -1,7 +1,8 @@
 RDD Functions
 
 **Splitting rows of info**
-import org.apache.spark._
+
+import org.apache.spark._ 
 
 val data = sc.parallelize(Array("IN01 2016 01 00100000001 20160115",
                                 "AU01 2016 01 00100000001 20170115"))
@@ -143,5 +144,23 @@ println("\n Results \n ------------")
 println("companyCodeRDD : " + companyCodeRDD.toDF.show())
 
 
+//save a RDD to HDFS as a Textfile 
+
+import org.apache.hadoop.fs.FileSystem
+import org.apache.hadoop.fs.Path
+val fs = FileSystem.get(sc.hadoopConfiguration)
+
+fs.delete(new Path("/user/vora/sapData"), true)
+val sapDataRDD = sc.parallelize(Array("GB01,100","IN01,200","UK01 90"))
+sapDataRDD.repartition(1).saveAsTextFile("sapData")
+
+
+//import files to RDD from HDFS
+
+import scala.sys.process._
+
+val hdfsFileRDD = sc.textFile("hdfs://vorahost.dummy.nodomain:8020/user/vora/sapData")
+println("Result \n ------")
+println(hdfsFileRDD.collect().mkString("\n"))
 
 
